@@ -2,6 +2,13 @@ name: NODE-JS
 
 on: [workflow_dispatch, push]
 
+permissions: read-all
+
+concurrency: 
+  cancel-in-progress: false
+
+  
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -10,10 +17,14 @@ jobs:
       - name: checkout
         uses: actions/checkout@v7
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4 # Uses v4 which runs on Node 24
         with:
-          node-version: '22'
+          languages: 'javascript-typescript'
+          build-mode: none 
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
 
       - name: install dependencies
         run: npm install
