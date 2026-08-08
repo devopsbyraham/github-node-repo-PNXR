@@ -1,43 +1,58 @@
-name: NODE-JS
+name: NodeJs
 
-on: [workflow_dispatch, push]
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+      - release
 
-permissions: write-all
-  
+permissions:
+  security-events: write
+  issues: write
+  actions: read
+  contents: read
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
-      - name: checkout
-        uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4 # Uses v4 which runs on Node 24
-        with:
-          languages: 'javascript-typescript'
-          build-mode: none 
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
-
-      - name: install dependencies
+      - name: Build
         run: npm install
 
-      - name: run
-        run: npm run build --if-present
-
-      - name: test
-        run: echo "test is passed"
-
-      - name: Artifact upload 
-        uses: actions/upload-artifact@v7
+      - name: Upload file as artifact
+        uses: actions/upload-artifact@v4
         with:
-           name: artifact-1
-           path: |
-              package*
+          name: shared-data
+          path: ~/.npm
 
+  test:
+    runs-on: ubuntu-latest
+    needs: build
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
+      - name: Build
+        run: npm install
 
+      - name: Test
+        run: npm test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        run: echo "My code is deployed !!"
