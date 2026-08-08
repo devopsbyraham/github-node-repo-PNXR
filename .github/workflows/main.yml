@@ -24,4 +24,10 @@ jobs:
       - name: test
         run: echo "test is passed"
 
+      - name: Upload file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: shared-data
+          path: ~/.npm
+
 
