@@ -17,7 +17,11 @@ permissions:
 jobs:
   build:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }} # Dynamically chooses the OS
+    strategy:
+      matrix:
+       os: [ubuntu-latest, windows-latest]
+       node-version: [18, 20, 22] # Defines version variables
 
     steps:
       - name: Checkout
@@ -32,25 +36,8 @@ jobs:
           name: shared-data
           path: ~/.npm
 
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Build
-        run: npm install
-
       - name: Test
         run: echo "code is tested"
-
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
 
       - name: Deploy
         run: echo "My code is deployed !!"
