@@ -1,0 +1,15 @@
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  # Call the reusable workflow
+  trigger-build:
+    uses: ./.github/workflows/main.yml   # Format for local repository references
+    with:
+      node-version: '20'
+    secrets:
+      API_TOKEN: ${{ secrets.PROD_API_TOKEN }}
+
